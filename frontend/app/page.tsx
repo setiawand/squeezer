@@ -26,15 +26,15 @@ export default function Home() {
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       setPreviewUrl(url);
-      // trigger download
       const a = document.createElement("a");
       a.href = url;
       a.download = "compressed.jpg";
       document.body.appendChild(a);
       a.click();
       a.remove();
-    } catch (e: any) {
-      setError(e.message ?? "Gagal mengompresi");
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Gagal mengompresi";
+      setError(message);
     } finally {
       setDownloading(false);
     }
