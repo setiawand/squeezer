@@ -1,5 +1,6 @@
 services:
   backend:
+    image: ghcr.io/setiawand/squeezer-backend:latest
     build:
       context: ./backend
     container_name: squeezer-backend
@@ -16,6 +17,7 @@ services:
       start_period: 10s
 
   frontend:
+    image: ghcr.io/setiawand/squeezer-frontend:latest
     build:
       context: ./frontend
       args:
