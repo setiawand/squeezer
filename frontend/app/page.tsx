@@ -6,7 +6,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8001";
+function resolveApiBase(): string {
+  const envApi = process.env.NEXT_PUBLIC_API_URL;
+  const defaultApi = typeof window !== "undefined"
+    ? `${window.location.protocol}//${window.location.hostname}:8001`
+    : "http://127.0.0.1:8001";
+  if (!envApi) return defaultApi;
+  if (/localhost|127\.0\.0\.1/.test(envApi)) return defaultApi;
+  return envApi;
+}
+
+const API_BASE = resolveApiBase();
 
 export default function Home() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);

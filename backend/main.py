@@ -7,13 +7,18 @@ from PIL import Image
 
 app = FastAPI(title="Squeezer API")
 
-# CORS untuk frontend dev
-origins = [
+# CORS
+_default_origins = [
     "http://127.0.0.1:3000",
     "http://localhost:3000",
     "http://127.0.0.1:3001",
     "http://localhost:3001",
 ]
+_allowed = os.getenv("ALLOWED_ORIGINS")
+origins = (
+    [o.strip() for o in _allowed.split(",") if o.strip()] if _allowed else _default_origins
+)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
