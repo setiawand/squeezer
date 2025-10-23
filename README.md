@@ -109,4 +109,53 @@ image-compressor/
 - Healthcheck gagal:
   - Cek logs: `docker compose logs -f backend frontend`.
 
+## Menggunakan Image dari Registry (GHCR)
+
+- Pull image secara manual:
+  - `docker pull ghcr.io/setiawand/squeezer-backend:latest`
+  - `docker pull ghcr.io/setiawand/squeezer-frontend:latest`
+- Jalankan lewat Compose tanpa build:
+  - `docker compose pull` (menarik image terbaru dari GHCR)
+  - `docker compose up -d` (menjalankan container memakai image yang sudah dipull)
+- Pin versi spesifik di Compose:
+  - Edit `docker-compose.yml` untuk menetapkan tag tertentu:
+
+```
+services:
+  backend:
+    image: ghcr.io/setiawand/squeezer-backend:v1.0.0
+  frontend:
+    image: ghcr.io/setiawand/squeezer-frontend:v1.0.0
+```
+
+- Menjalankan langsung dengan Docker (tanpa Compose):
+  - Backend: `docker run --rm -p 8001:8001 ghcr.io/setiawand/squeezer-backend:v1.0.0`
+  - Frontend: `docker run --rm -p 3001:3000 ghcr.io/setiawand/squeezer-frontend:v1.0.0`
+
+- Mengubah API URL untuk frontend:
+  - Penting: `NEXT_PUBLIC_API_URL` di-embed saat build Next.js. Jika backend Anda bukan `http://localhost:8001`, bangun image frontend baru dengan argumen build yang sesuai:
+
+```
+docker build -t ghcr.io/setiawand/squeezer-frontend:custom \
+  --build-arg NEXT_PUBLIC_API_URL=https://api.example.com \
+  -f frontend/Dockerfile frontend
+```
+
+  - Alternatif via Compose (build dari sumber):
+
+```
+services:
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_URL: https://api.example.com
+    image: ghcr.io/setiawand/squeezer-frontend:custom
+```
+
+- Autentikasi ke GHCR (bila paket private):
+  - `echo <PAT> | docker login ghcr.io -u setiawand --password-stdin`
+  - Minimal scope PAT untuk pull: `read:packages`
+  - Paket dapat dilihat di: https://github.com/users/setiawand/packages
+
 Selamat menggunakan Squeezer!
